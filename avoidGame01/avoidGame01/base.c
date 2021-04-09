@@ -159,6 +159,8 @@ bool Outgame(void) {
     printf("게임종료/다시하기");
     printf("\n");
     printf("continue......Y/N");
+
+    //Y/N 중에 하나를 누를때까지 반복
     while (1) {
         if (GetAsyncKeyState('Y') & 0x8000) {
             Bet = false;
@@ -172,10 +174,38 @@ bool Outgame(void) {
     }
     return Bet;
 }
+//레벨 선택
+int revel() {
+    system("cls");
+    int revelnum;
+    printf("///레벨선택///\n***[1-2-3]***");
+
+    /*0이나 (0x0000) : 이전에 누른 적이 없고 호출 시점에서 안눌린 상태
+    0x8000 : 이전에 누른 적이 없고 호출 시점에서 눌린 상태
+    0x8001 : 이전에 누른 적이 있고 호출 시점에서 눌린 상태
+    1이나 (0x0001) :이전에 누른 적이 있고 호출 시점에서 안눌린 상태*/
+    
+    while (1) {
+        if (GetAsyncKeyState('1') & 0x8000) {
+            revelnum = 20;
+            break;
+        }
+        if (GetAsyncKeyState('2') & 0x8000) {
+            revelnum = 50;
+            break;
+        }
+        if (GetAsyncKeyState('3') & 0x8000) {
+            revelnum = 100;
+            break;
+        }
+    }
+    return revelnum;
+}
 
 //사실 메인
 bool ing() {
     init();
+    int speed=revel();
     startTimer();
     do {
         //매번 실행할 때마다 다른 값을 주기 위한 시드값 설정
@@ -189,7 +219,7 @@ bool ing() {
 
         PrintGame();
         //게임의 속도 조절을 위해 Sleep 설정
-        Sleep(50);
+        Sleep(speed);
     } while (!(DamagedPlayer()));    //닿지 않으면 반복
     endTimer();
     return Outgame();
