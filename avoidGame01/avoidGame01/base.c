@@ -14,6 +14,8 @@
 Snow snow[WIDTH];
 Player one;
 clock_t start;
+double time1;
+double max_time=0;
 
 //// 초기값 ////
 void init()
@@ -124,20 +126,20 @@ void PrintGame()
         {
             //적 위치에 적군 출력
             gotoxy(snow[i].x, HEIGHT - snow[i].y);
-            printf("|");
+            printf("o");
         }
     }
     //플레이어 출력
     gotoxy(one.x, HEIGHT);
-    printf("8");
+    printf("?");
 
     //바닥 출력
     gotoxy(0, HEIGHT + 1);
     for (i = 0; i < WIDTH; i++)
-        printf("▩");
+        printf("^^");//▩
 }
 
-//타이머 함수
+//타이머 함수 : clock();
 //타이머 시작
 void startTimer() {
     start = clock();
@@ -147,18 +149,29 @@ void endTimer() {
     system("cls");
 
     clock_t end = clock();
-    double time = (double)(end - start) / CLOCKS_PER_SEC; //초단위 변환
-    printf("\n경과시간 : %0.3lf초\n", time); //소수점 셋째 자리까지
+    time1 = (double)(end - start) / CLOCKS_PER_SEC; //초단위 변환
+    printf("\n\n\n\t\t-------------------------\n\t\t|                       |");
+    printf("\n\t\t| [경과시간 : %0.3lf초]  |\n", time1); //소수점 셋째 자리까지
+    printf("\t\t|                       |\n");
+    printf("\t\t|=======================|\n");
+
+    if (time1 > max_time) { max_time = time1; }
+
+    printf("\t\t| +최고기록 : %0.3lf초+  |\n", max_time); //소수점 셋째 자리까지
+    printf("\t\t|-----------------------|\n");
+    printf("\t\t|    |   |   |   |   |  |");
 }
+
 //게임 끝났을때 메뉴
 bool Outgame(void) {
     bool Bet;
     // while(1){
     //system("cls");
-    printf("\n");
-    printf("게임종료/다시하기");
-    printf("\n");
-    printf("continue......Y/N");
+    printf("\n\t\t|***********************|\n");
+    printf("\t\t|  그만하기 / 다음단계  |");
+    printf("\n\t\t|***********************|\n");
+    printf("\t\t|     Y     |     N     |");
+    printf("\n\t\t|+++++++++++++++++++++++|");
 
     //Y/N 중에 하나를 누를때까지 반복
     while (1) {
@@ -178,7 +191,7 @@ bool Outgame(void) {
 int revel() {
     system("cls");
     int revelnum;
-    printf("///레벨선택///\n***[1-2-3]***");
+    printf("///레벨선택///\n***[1-2-3-4]***");
 
     /*0이나 (0x0000) : 이전에 누른 적이 없고 호출 시점에서 안눌린 상태
     0x8000 : 이전에 누른 적이 없고 호출 시점에서 눌린 상태
@@ -186,16 +199,21 @@ int revel() {
     1이나 (0x0001) :이전에 누른 적이 있고 호출 시점에서 안눌린 상태*/
     
     while (1) {
-        if (GetAsyncKeyState('1') & 0x8000) {
-            revelnum = 20;
-            break;
-        }
-        if (GetAsyncKeyState('2') & 0x8000) {
-            revelnum = 50;
-            break;
-        }
-        if (GetAsyncKeyState('3') & 0x8000) {
+        //위에 숫자를 누르거나 숫자키패드의 숫자를 눌렀을때 조건
+        if (GetAsyncKeyState('1') & 0x8000 || GetAsyncKeyState(VK_NUMPAD1) & 0x8000) {
             revelnum = 100;
+            break;
+        }
+        else if (GetAsyncKeyState('2') & 0x8000 || GetAsyncKeyState(VK_NUMPAD2) & 0x8000) {
+            revelnum = 40;
+            break;
+        }
+        else if (GetAsyncKeyState('3') & 0x8000 || GetAsyncKeyState(VK_NUMPAD3) & 0x8000) {
+            revelnum = 17;
+            break;
+        }
+        else if (GetAsyncKeyState('4') & 0x8000 || GetAsyncKeyState(VK_NUMPAD4) & 0x8000) {
+            revelnum = 0;
             break;
         }
     }
@@ -205,34 +223,39 @@ int revel() {
 //사실 메인
 bool ing() {
     init();
+    //레벨 선택하기
     int speed=revel();
-    startTimer();
+    startTimer(); //타이머 시작
+
     do {
         //매번 실행할 때마다 다른 값을 주기 위한 시드값 설정
         srand((int)malloc(NULL));
 
-        CreateEnemy();
-        FallEnemy();
-        DelEnemy();
+        CreateEnemy();  //적생성
+        FallEnemy();    //적 움직이기
+        DelEnemy();     //떨어진 적 없애기
 
-        MovePlayer();
+        MovePlayer();   //사용자 움직임
 
-        PrintGame();
+        PrintGame();    //화면 만들기
+
         //게임의 속도 조절을 위해 Sleep 설정
         Sleep(speed);
     } while (!(DamagedPlayer()));    //닿지 않으면 반복
-    endTimer();
-    return Outgame();
+    endTimer(); //타이머 종료
+    return Outgame(); // 다시하기 메뉴 호출
 }
 //// main 함수 ////
 void main(void)
 {
     bool t;
 
+    //게임 실행문 호출- 그만하기 누르기 전까지 반복
     do  {
         t = ing();
     } while (t);
 
+    system("cls");
     printf("\n\n-----종료되었습니다.----\n\n");
     
 }
