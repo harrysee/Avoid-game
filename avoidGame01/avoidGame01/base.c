@@ -9,13 +9,21 @@
 #define HEIGHT 20
 #define TRUE 1
 #define FALSE 0
+#define LV1 100
+#define LV2 40
+#define LV3 17
+#define LV4 0
+
 
 //전역변수 선언
 Snow snow[WIDTH];
 Player one;
-clock_t start;
+clock_t start,c;
 double time1;
-double max_time=0;
+double max_time=0,cn;
+int revelnum;
+int nowrevel;
+int speed;
 
 //// 초기값 ////
 void init()
@@ -116,10 +124,21 @@ void PrintGame()
     //모든 화면 clear
     system("cls");
 
-    gotoxy((WIDTH / 2) - 7, HEIGHT + 2);
-    printf("CPU AVOID GAME");
-
+    //gotoxy((WIDTH / 2) - 7, HEIGHT + 2);
+    //레벨 출력
+    switch (nowrevel) {
+    case 1: {printf("【   Lv.1   │"); speed = LV1; break; }
+    case 2: {printf("【  Lv.2   │"); speed = LV2; break; }
+    case 3: {printf("【  Lv.3   │"); speed = LV3; break; }
+    default: {printf("【   Lv.4   │"); speed = LV4; break; }
+    }
+    printf("\t  √  CPU 피하기 게임 √    "); //중간 title
+    //현재시간 출력
+    printf("│    %.3f초    】\n", cn);                                  
     int i;
+    for (i = 0; i < WIDTH; i++)
+        printf("──");//▩
+
     for (i = 0; i < WIDTH; i++)
     {
         if (snow[i].con)
@@ -131,12 +150,14 @@ void PrintGame()
     }
     //플레이어 출력
     gotoxy(one.x, HEIGHT);
-    printf("?");
+    printf("♀");
 
     //바닥 출력
     gotoxy(0, HEIGHT + 1);
     for (i = 0; i < WIDTH; i++)
-        printf("^^");//▩
+        printf("▲");//▩
+    printf("\n");
+
 }
 
 //타이머 함수 : clock();
@@ -150,28 +171,36 @@ void endTimer() {
 
     clock_t end = clock();
     time1 = (double)(end - start) / CLOCKS_PER_SEC; //초단위 변환
-    printf("\n\n\n\t\t-------------------------\n\t\t|                       |");
-    printf("\n\t\t| [경과시간 : %0.3lf초]  |\n", time1); //소수점 셋째 자리까지
-    printf("\t\t|                       |\n");
-    printf("\t\t|=======================|\n");
 
-    if (time1 > max_time) { max_time = time1; }
-
-    printf("\t\t| +최고기록 : %0.3lf초+  |\n", max_time); //소수점 셋째 자리까지
-    printf("\t\t|-----------------------|\n");
-    printf("\t\t|    |   |   |   |   |  |");
 }
 
 //게임 끝났을때 메뉴
 bool Outgame(void) {
     bool Bet;
+
+    //경과시간 출력
+    printf("\n\n\t\t┌───────────────────────┐\n\t\t│                       │\n");
+    if (time1 < 10.0)  printf("\t\t│  경과시간 :  %0.3lf초  │\n", time1); //10미만이면 앞에 0붙이기
+    else  printf("\t\t│  경과시간 : %0.3lf초  │\n", time1); //앞이 두자리면 그대로
+    printf("\t\t│                       │\n");
+    printf("\t\t│ 〓〓〓〓〓〓〓〓〓〓〓│\n");
+
+    //최고기록 구하기
+    if (time1 > max_time) { max_time = time1; }
+
+    //최고기록 출력
+    if(max_time<10.0) printf("\t\t│  ~최고기록 : %0.3lf초~ │\n", max_time); //10미만이면 앞에 0붙이기
+    else printf("\t\t│ ~최고기록 : %0.3lf초~ │\n", max_time); //앞이 두자리면 그대로
+
+    printf("\t\t│ …………………………‥│\n");
+    printf("\t\t│   ◈   ◈   ◈   ◈   │");
     // while(1){
     //system("cls");
-    printf("\n\t\t|***********************|\n");
-    printf("\t\t|  그만하기 / 다음단계  |");
-    printf("\n\t\t|***********************|\n");
-    printf("\t\t|     Y     |     N     |");
-    printf("\n\t\t|+++++++++++++++++++++++|");
+    printf("\n\t\t│ **********************│\n");
+    printf("\t\t│  그만하기 ˚ 다시하기 │");
+    printf("\n\t\t│ ↓↓↓↓↓--↓↓↓↓↓│\n");
+    printf("\t\t│     Y     ::    N     │");
+    printf("\n\t\t└───────────────────────┘\n");
 
     //Y/N 중에 하나를 누를때까지 반복
     while (1) {
@@ -181,17 +210,17 @@ bool Outgame(void) {
         }
         if (GetAsyncKeyState('N') & 0x8000) {
             Bet = true;
+            nowrevel++;
             break;
 
         }
     }
     return Bet;
 }
-//레벨 선택
+//시작할 때 레벨 선택
 int revel() {
     system("cls");
-    int revelnum;
-    printf("///레벨선택///\n***[1-2-3-4]***");
+    printf("\n\t------------------------>\n\t│     *  레벨선택  *    │\n\t------------------------>\n\t│  1  │  2  │  3  │  4  │\n\t------------------------>");
 
     /*0이나 (0x0000) : 이전에 누른 적이 없고 호출 시점에서 안눌린 상태
     0x8000 : 이전에 누른 적이 없고 호출 시점에서 눌린 상태
@@ -201,19 +230,23 @@ int revel() {
     while (1) {
         //위에 숫자를 누르거나 숫자키패드의 숫자를 눌렀을때 조건
         if (GetAsyncKeyState('1') & 0x8000 || GetAsyncKeyState(VK_NUMPAD1) & 0x8000) {
-            revelnum = 100;
+            revelnum = LV1; //1단계
+            nowrevel = 1;
             break;
         }
         else if (GetAsyncKeyState('2') & 0x8000 || GetAsyncKeyState(VK_NUMPAD2) & 0x8000) {
-            revelnum = 40;
+            revelnum = LV2;  //2단계
+            nowrevel = 2;
             break;
         }
         else if (GetAsyncKeyState('3') & 0x8000 || GetAsyncKeyState(VK_NUMPAD3) & 0x8000) {
-            revelnum = 17;
+            revelnum = LV3;  //3단계
+            nowrevel = 3;
             break;
         }
         else if (GetAsyncKeyState('4') & 0x8000 || GetAsyncKeyState(VK_NUMPAD4) & 0x8000) {
-            revelnum = 0;
+            revelnum = LV4;   //4단계
+            nowrevel = 4;
             break;
         }
     }
@@ -239,8 +272,13 @@ bool ing() {
 
         PrintGame();    //화면 만들기
 
+        //현재시간 구하기
+        c = clock();
+        cn = (double)(c- start) / CLOCKS_PER_SEC;
+
         //게임의 속도 조절을 위해 Sleep 설정
         Sleep(speed);
+
     } while (!(DamagedPlayer()));    //닿지 않으면 반복
     endTimer(); //타이머 종료
     return Outgame(); // 다시하기 메뉴 호출
@@ -257,6 +295,5 @@ void main(void)
 
     system("cls");
     printf("\n\n-----종료되었습니다.----\n\n");
-    
 }
 
