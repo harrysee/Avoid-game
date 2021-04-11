@@ -124,13 +124,14 @@ void PrintGame()
     //모든 화면 clear
     system("cls");
 
-    //gotoxy((WIDTH / 2) - 7, HEIGHT + 2);
+    //gotoxy(0, HEIGHT + 2); // (WIDTH /2) - 7
     //레벨 출력
+    printf("\n");
     switch (nowrevel) {
-    case 1: {printf("【   Lv.1   │"); speed = LV1; break; }
-    case 2: {printf("【  Lv.2   │"); speed = LV2; break; }
-    case 3: {printf("【  Lv.3   │"); speed = LV3; break; }
-    default: {printf("【   Lv.4   │"); speed = LV4; break; }
+    case 1: {printf("【   Lv.1   │");  break; }
+    case 2: {printf("【  Lv.2   │");  break; }
+    case 3: {printf("【  Lv.3   │");  break; }
+    default: {printf("【   Lv.4   │"); break; }
     }
     printf("\t  √  CPU 피하기 게임 √    "); //중간 title
     //현재시간 출력
@@ -179,7 +180,8 @@ bool Outgame(void) {
     bool Bet;
 
     //경과시간 출력
-    printf("\n\n\t\t┌───────────────────────┐\n\t\t│                       │\n");
+    gotoxy(0, 5);
+    printf("\t\t┌───────────────────────┐\n\t\t│                       │\n");
     if (time1 < 10.0)  printf("\t\t│  경과시간 :  %0.3lf초  │\n", time1); //10미만이면 앞에 0붙이기
     else  printf("\t\t│  경과시간 : %0.3lf초  │\n", time1); //앞이 두자리면 그대로
     printf("\t\t│                       │\n");
@@ -217,10 +219,32 @@ bool Outgame(void) {
     }
     return Bet;
 }
-//시작할 때 레벨 선택
+//게임 시작 안내판
+void startMenu(void) {
+    while (1) {
+        gotoxy(11.8, 5);
+        printf(" 「비 피하기」");
+        gotoxy(7.8, 7);
+        printf("《시작하려면 아무키를 누르세요》");
+        Sleep(50);
+        if (_kbhit()) break;
+    }
+}
+//시작할 때 메뉴
 int revel() {
     system("cls");
-    printf("\n\t------------------------>\n\t│     *  레벨선택  *    │\n\t------------------------>\n\t│  1  │  2  │  3  │  4  │\n\t------------------------>");
+    startMenu(); //안내말 호출
+    //레벨 선택 글자 출력
+    gotoxy(9, 9);
+    printf("------------------------>\n");
+    gotoxy(9, 10);
+    printf("│\t* 레벨선택 * \t│\n");
+    gotoxy(9, 11);
+    printf("------------------------>\n");
+    gotoxy(9, 12);
+    printf("│  1  │  2  │  3  │  4 │\n");
+    gotoxy(9, 13);
+    printf("------------------------>");
 
     /*0이나 (0x0000) : 이전에 누른 적이 없고 호출 시점에서 안눌린 상태
     0x8000 : 이전에 누른 적이 없고 호출 시점에서 눌린 상태
@@ -256,8 +280,9 @@ int revel() {
 //사실 메인
 bool ing() {
     init();
+    system("color f0");
     //레벨 선택하기
-    int speed=revel();
+    int speed = revel();
     startTimer(); //타이머 시작
 
     do {
