@@ -5,8 +5,8 @@
 #include "Position.h"
 
 //사용자 정의 세미콜론 없어야함
-#define WIDTH 30
-#define HEIGHT 20
+#define WIDTH 22
+#define HEIGHT 17
 #define TRUE 1
 #define FALSE 0
 #define LV1 100
@@ -18,9 +18,9 @@
 //전역변수 선언
 Snow snow[WIDTH];
 Player one;
-clock_t start,c;
+clock_t start, c;
 double time1;
-double max_time=0,cn;
+double max_time = 0, cn;
 int revelnum;
 int nowrevel;
 int speed;
@@ -128,14 +128,14 @@ void PrintGame()
     //레벨 출력
     printf("\n");
     switch (nowrevel) {
-    case 1: {printf("【   Lv.1   │");  break; }
-    case 2: {printf("【  Lv.2   │");  break; }
-    case 3: {printf("【  Lv.3   │");  break; }
-    default: {printf("【   Lv.4   │"); break; }
-    }
-    printf("\t  √  CPU 피하기 게임 √    "); //중간 title
+    case 1: {printf("【   Lv.1  │");  break; }
+    case 2: {printf("【   Lv.2  │");  break; }
+    case 3: {printf("【   Lv.3  │");  break; }
+    default: {printf("【    Lv.4  │"); break; }
+    } 
+    printf("  CPU 피하기 게임  "); //중간 title
     //현재시간 출력
-    printf("│    %.3f초    】\n", cn);                                  
+    printf("│   %.1f초   】\n", cn);
     int i;
     for (i = 0; i < WIDTH; i++)
         printf("──");//▩
@@ -182,8 +182,8 @@ bool Outgame(void) {
     //경과시간 출력
     gotoxy(0, 5);
     printf("\t\t┌───────────────────────┐\n\t\t│                       │\n");
-    if (time1 < 10.0)  printf("\t\t│  경과시간 :  %0.3lf초  │\n", time1); //10미만이면 앞에 0붙이기
-    else  printf("\t\t│  경과시간 : %0.3lf초  │\n", time1); //앞이 두자리면 그대로
+    if (time1 < 10.0)  printf("\t\t│  경과시간 :  %0.1lf초    │\n", time1); //10미만이면 앞에 0붙이기
+    else  printf("\t\t│  경과시간 : %0.1lf초                │\n", time1); //앞이 두자리면 그대로
     printf("\t\t│                       │\n");
     printf("\t\t│ 〓〓〓〓〓〓〓〓〓〓〓│\n");
 
@@ -191,17 +191,18 @@ bool Outgame(void) {
     if (time1 > max_time) { max_time = time1; }
 
     //최고기록 출력
-    if(max_time<10.0) printf("\t\t│  ~최고기록 : %0.3lf초~ │\n", max_time); //10미만이면 앞에 0붙이기
-    else printf("\t\t│ ~최고기록 : %0.3lf초~ │\n", max_time); //앞이 두자리면 그대로
+    printf("\t\t│                       │\n");
+    if (max_time < 10.0) printf("\t\t│  최고기록 : %0.1lf초     │\n", max_time); //10미만이면 앞에 0붙이기
+    else printf("\t\t│ 최고기록 : %0.1lf초      │\n", max_time); //앞이 두자리면 그대로
+    printf("\t\t│                       │\n");
 
-    printf("\t\t│ …………………………‥│\n");
-    printf("\t\t│   ◈   ◈   ◈   ◈   │");
+    printf("\t\t│ 〓〓〓〓〓〓〓〓〓〓〓│\n");
+    printf("\t\t│                       │\n");
     // while(1){
     //system("cls");
-    printf("\n\t\t│ **********************│\n");
-    printf("\t\t│  그만하기 ˚ 다시하기 │");
-    printf("\n\t\t│ ↓↓↓↓↓--↓↓↓↓↓│\n");
-    printf("\t\t│     Y     ::    N     │");
+    printf("\t\t│  그만하기   다시하기  │");
+    printf("\n\t\t│                       │\n");
+    printf("\t\t│     Y     :    N      │");
     printf("\n\t\t└───────────────────────┘\n");
 
     //Y/N 중에 하나를 누를때까지 반복
@@ -219,38 +220,62 @@ bool Outgame(void) {
     }
     return Bet;
 }
+
 //게임 시작 안내판
 void startMenu(void) {
+    int ws = 13;
     while (1) {
-        gotoxy(11.8, 5);
-        printf(" 「비 피하기」");
-        gotoxy(7.8, 7);
+        //테두리
+        gotoxy(ws, 3);
+        for (int i=0;  i < 45; i++)
+            printf(".");
+
+        for (int i = 4; i < 14; i++) {
+            gotoxy(ws, i);
+            printf(".");
+        }
+        //초반 설명글
+        gotoxy(ws+7, 4);
+        printf(" 「눈 피하기」");
+        gotoxy(ws+1, 6);
+        printf("●떨어지는 눈덩이를 피해 살아남으세요!●");
+        gotoxy(ws+11, 7);
+        printf("▷");
+        gotoxy(ws+3, 8);
         printf("《시작하려면 아무키를 누르세요》");
-        Sleep(50);
+        
+        //테두리
+        gotoxy(ws, 14);
+        for (int i = 0; i < 45; i++)
+            printf(".");
+        for (int i = 4; i < 14; i++) {
+            gotoxy(ws+22, i);
+            printf(".");
+        }
+        Sleep(300);
         if (_kbhit()) break;
     }
 }
 //시작할 때 메뉴
 int revel() {
+    int ws = 18;
     system("cls");
     startMenu(); //안내말 호출
     //레벨 선택 글자 출력
-    gotoxy(9, 9);
-    printf("------------------------>\n");
-    gotoxy(9, 10);
-    printf("│\t* 레벨선택 * \t│\n");
-    gotoxy(9, 11);
-    printf("------------------------>\n");
-    gotoxy(9, 12);
-    printf("│  1  │  2  │  3  │  4 │\n");
-    gotoxy(9, 13);
-    printf("------------------------>");
+    gotoxy(ws, 10);
+    printf("│\t * 레벨선택 *\t│\n");
+   // gotoxy(ws, 11);
+    //printf("------------------------\n");
+    gotoxy(ws, 12);
+    printf("  ¹    ²    ³    ⁴ \n");
+    //gotoxy(ws, 13);
+    //printf("------------------------");
 
     /*0이나 (0x0000) : 이전에 누른 적이 없고 호출 시점에서 안눌린 상태
     0x8000 : 이전에 누른 적이 없고 호출 시점에서 눌린 상태
     0x8001 : 이전에 누른 적이 있고 호출 시점에서 눌린 상태
     1이나 (0x0001) :이전에 누른 적이 있고 호출 시점에서 안눌린 상태*/
-    
+
     while (1) {
         //위에 숫자를 누르거나 숫자키패드의 숫자를 눌렀을때 조건
         if (GetAsyncKeyState('1') & 0x8000 || GetAsyncKeyState(VK_NUMPAD1) & 0x8000) {
@@ -280,7 +305,7 @@ int revel() {
 //사실 메인
 bool ing() {
     init();
-    system("color f0");
+    //system("color f0");
     //레벨 선택하기
     int speed = revel();
     startTimer(); //타이머 시작
@@ -299,7 +324,7 @@ bool ing() {
 
         //현재시간 구하기
         c = clock();
-        cn = (double)(c- start) / CLOCKS_PER_SEC;
+        cn = (double)(c - start) / CLOCKS_PER_SEC;
 
         //게임의 속도 조절을 위해 Sleep 설정
         Sleep(speed);
@@ -314,7 +339,7 @@ void main(void)
     bool t;
 
     //게임 실행문 호출- 그만하기 누르기 전까지 반복
-    do  {
+    do {
         t = ing();
     } while (t);
 
