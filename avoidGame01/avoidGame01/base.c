@@ -5,8 +5,9 @@
 #include "Position.h"
 
 //사용자 정의 세미콜론 없어야함
-#define WIDTH 22
-#define HEIGHT 17
+#define CT 12
+#define WIDTH 33
+#define HEIGHT 15
 #define TRUE 1
 #define FALSE 0
 #define LV1 100
@@ -29,10 +30,10 @@ int speed;
 void init()
 {
     int i;
-    for (i = 0; i < WIDTH; i++)
+    for (i = CT; i < WIDTH; i++)
         snow[i].con = FALSE;
     //플레이어 위치는 중앙
-    one.x = WIDTH / 2;
+    one.x = (WIDTH+ CT) / 2;
 }
 
 //// 피할 적들 처리 ////
@@ -41,14 +42,14 @@ void CreateEnemy()
 {
     int i;
 
-    for (i = 0; i < WIDTH; i++)
+    for (i = CT; i < WIDTH; i++)
     {
         //해당 인덱스[i]에 적이 없으면 (FALSE 이면 실행)
         if (!snow[i].con)
         {
             //가로 (x축) 무작위로 적 출현, 세로(y축)은 출현 위치 항상 일치
-            snow[i].x = rand() % WIDTH;
-            snow[i].y = HEIGHT - 1;
+            snow[i].x = (rand() % (WIDTH-CT))+CT;
+            snow[i].y = HEIGHT - 2;
             //적이 출현한 인덱스 [i]의 상태 = TRUE로 변경
             snow[i].con = TRUE;
             return;
@@ -59,7 +60,7 @@ void CreateEnemy()
 void FallEnemy()
 {
     int i;
-    for (i = 0; i < WIDTH; i++)
+    for (i = CT; i < WIDTH; i++)
     {
         //해당 인덱스 [i]에 적이 있으면 (TRUE라면) 움직임 실행
         if (snow[i].con)
@@ -72,7 +73,7 @@ void FallEnemy()
 void DelEnemy()
 {
     int i;
-    for (i = 0; i < WIDTH; i++)
+    for (i = CT; i < WIDTH; i++)
     {
         if (snow[i].con && snow[i].y < 0)
             snow[i].con = FALSE;
@@ -82,7 +83,7 @@ void DelEnemy()
 int DamagedPlayer()
 {
     int i;
-    for (i = 0; i < WIDTH; i++)
+    for (i = CT; i < WIDTH; i++)
     {
         //적의 상태가 TRUE && 적의 위치가 y=0 즉 바닥 && 적의 x축 위치 = 플레이어의 x축 위치
         if ((snow[i].con && snow[i].y == 0) && (snow[i].x == one.x))
@@ -112,8 +113,8 @@ void MovePlayer()
     if (isKeyDown(VK_RIGHT))
         one.x++;
     //위치 범위 제한
-    if (one.x < 0)
-        one.x = 0;
+    if (one.x < CT)
+        one.x = CT;
     if (one.x > WIDTH - 1)
         one.x = WIDTH - 1;
 }
@@ -126,21 +127,23 @@ void PrintGame()
 
     //gotoxy(0, HEIGHT + 2); // (WIDTH /2) - 7
     //레벨 출력
-    printf("\n");
+    //printf("\n");
+    gotoxy(CT, 1);
     switch (nowrevel) {
-    case 1: {printf("【   Lv.1  │");  break; }
-    case 2: {printf("【   Lv.2  │");  break; }
-    case 3: {printf("【   Lv.3  │");  break; }
-    default: {printf("【    Lv.4  │"); break; }
-    } 
+    case 1: {printf("【  Lv.1 │");  break; }
+    case 2: {printf("【  Lv.2 │");  break; }
+    case 3: {printf("【  Lv.3 │");  break; }
+    default: {printf("【   Lv.4 │"); break; }
+    }
     printf("  CPU 피하기 게임  "); //중간 title
     //현재시간 출력
     printf("│   %.1f초   】\n", cn);
+    gotoxy(CT, 2);
     int i;
-    for (i = 0; i < WIDTH; i++)
+    for (i = CT; i < WIDTH; i++)
         printf("──");//▩
 
-    for (i = 0; i < WIDTH; i++)
+    for (i = CT; i < WIDTH; i++)
     {
         if (snow[i].con)
         {
@@ -154,8 +157,8 @@ void PrintGame()
     printf("♀");
 
     //바닥 출력
-    gotoxy(0, HEIGHT + 1);
-    for (i = 0; i < WIDTH; i++)
+    gotoxy(CT, HEIGHT + 1);
+    for (i = CT; i < WIDTH; i++)
         printf("▲");//▩
     printf("\n");
 
@@ -220,56 +223,59 @@ bool Outgame(void) {
     }
     return Bet;
 }
-
 //게임 시작 안내판
 void startMenu(void) {
     int ws = 13;
     while (1) {
         //테두리
-        gotoxy(ws, 3);
-        for (int i=0;  i < 45; i++)
-            printf(".");
-
+        /*gotoxy(ws, 3); 타이틀 위에부분 테두리
+        for (int i = 0; i < 45; i++)
+            printf(".");  */ 
+        
+        //왼쪽 기둥 테두리
         for (int i = 4; i < 14; i++) {
             gotoxy(ws, i);
             printf(".");
         }
         //초반 설명글
-        gotoxy(ws+7, 4);
-        printf(" 「눈 피하기」");
-        gotoxy(ws+1, 6);
+        gotoxy(ws, 4);
+        printf("................「눈 피하기」................");
+        gotoxy(ws + 1, 6);
         printf("●떨어지는 눈덩이를 피해 살아남으세요!●");
-        gotoxy(ws+11, 7);
+        gotoxy(ws + 11, 7);
         printf("▷");
-        gotoxy(ws+3, 8);
+        gotoxy(ws + 3, 8);
         printf("《시작하려면 아무키를 누르세요》");
-        
-        //테두리
-        gotoxy(ws, 14);
+
+        //밑에부분 테두리
+        gotoxy(ws, 14); 
         for (int i = 0; i < 45; i++)
             printf(".");
+        //오른쪽 기둥 테두리
         for (int i = 4; i < 14; i++) {
-            gotoxy(ws+22, i);
+            gotoxy(ws + 22, i);
             printf(".");
         }
-        Sleep(300);
+        Sleep(200);
         if (_kbhit()) break;
     }
 }
 //시작할 때 메뉴
 int revel() {
-    int ws = 18;
     system("cls");
     startMenu(); //안내말 호출
     //레벨 선택 글자 출력
+    int ws = 18;
     gotoxy(ws, 10);
     printf("│\t * 레벨선택 *\t│\n");
-   // gotoxy(ws, 11);
-    //printf("------------------------\n");
+    // gotoxy(ws, 11);
+     //printf("------------------------\n");
     gotoxy(ws, 12);
     printf("  ¹    ²    ³    ⁴ \n");
     //gotoxy(ws, 13);
     //printf("------------------------");
+
+
 
     /*0이나 (0x0000) : 이전에 누른 적이 없고 호출 시점에서 안눌린 상태
     0x8000 : 이전에 누른 적이 없고 호출 시점에서 눌린 상태
@@ -346,4 +352,3 @@ void main(void)
     system("cls");
     printf("\n\n-----종료되었습니다.----\n\n");
 }
-
