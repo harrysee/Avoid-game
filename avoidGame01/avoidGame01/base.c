@@ -5,8 +5,8 @@
 #include "Position.h"
 
 //사용자 정의 세미콜론 없어야함
-#define CT 12
-#define WIDTH 33
+#define CT 13
+#define WIDTH 34
 #define HEIGHT 15
 #define TRUE 1
 #define FALSE 0
@@ -181,32 +181,43 @@ void endTimer() {
 //게임 끝났을때 메뉴
 bool Outgame(void) {
     bool Bet;
-
+    int wt = 17;    //열중앙 조절바
     //경과시간 출력
-    gotoxy(0, 5);
-    printf("\t\t┌───────────────────────┐\n\t\t│                       │\n");
-    if (time1 < 10.0)  printf("\t\t│  경과시간 :  %0.1lf초    │\n", time1); //10미만이면 앞에 0붙이기
-    else  printf("\t\t│  경과시간 : %0.1lf초                │\n", time1); //앞이 두자리면 그대로
-    printf("\t\t│                       │\n");
-    printf("\t\t│ 〓〓〓〓〓〓〓〓〓〓〓│\n");
+    gotoxy(wt, 5); 
+    printf("┌───────────────────────┐\n"); 
+    gotoxy(wt, 6);
+    printf("│                       │\n");
+    gotoxy(wt, 7);
+    if (time1 < 10.0)  printf("│  경과시간 :  %0.1lf초    │\n", time1); //10미만이면 앞에 0붙이기
+    else  printf("│  경과시간 : %0.1lf초                │\n", time1); //앞이 두자리면 그대로
+    gotoxy(wt, 8);
+    printf("│                       │\n");
+    gotoxy(wt, 9);
+    printf("│ 〓〓〓〓〓〓〓〓〓〓〓│\n");
 
     //최고기록 구하기
     if (time1 > max_time) { max_time = time1; }
 
     //최고기록 출력
-    printf("\t\t│                       │\n");
-    if (max_time < 10.0) printf("\t\t│  최고기록 : %0.1lf초     │\n", max_time); //10미만이면 앞에 0붙이기
-    else printf("\t\t│ 최고기록 : %0.1lf초      │\n", max_time); //앞이 두자리면 그대로
-    printf("\t\t│                       │\n");
-
-    printf("\t\t│ 〓〓〓〓〓〓〓〓〓〓〓│\n");
-    printf("\t\t│                       │\n");
-    // while(1){
-    //system("cls");
-    printf("\t\t│  그만하기   다시하기  │");
-    printf("\n\t\t│                       │\n");
-    printf("\t\t│     Y     :    N      │");
-    printf("\n\t\t└───────────────────────┘\n");
+    gotoxy(wt, 10);
+    printf("│                       │\n");
+    gotoxy(wt, 11);
+    if (max_time < 10.0) printf("│  최고기록 : %0.1lf초     │\n", max_time); //10미만이면 앞에 0붙이기
+    else printf("│ 최고기록 : %0.1lf초      │\n", max_time); //앞이 두자리면 그대로
+    gotoxy(wt, 12);
+    printf("│                       │\n");
+    gotoxy(wt, 13);
+    printf("│ 〓〓〓〓〓〓〓〓〓〓〓│\n");
+    gotoxy(wt, 14);
+    printf("│                       │\n");
+    gotoxy(wt, 15);
+    printf("│  그만하기   다시하기  │\n");
+    gotoxy(wt, 16);
+    printf("│                       │\n");
+    gotoxy(wt, 17);
+    printf("│     Y     :    N      │");
+    gotoxy(wt, 18);
+    printf("└───────────────────────┘\n");
 
     //Y/N 중에 하나를 누를때까지 반복
     while (1) {
@@ -227,7 +238,6 @@ bool Outgame(void) {
 void startMenu(void) {
     int ws = 13;
     while (1) {
-        //테두리
         /*gotoxy(ws, 3); 타이틀 위에부분 테두리
         for (int i = 0; i < 45; i++)
             printf(".");  */ 
@@ -242,8 +252,8 @@ void startMenu(void) {
         printf("................「눈 피하기」................");
         gotoxy(ws + 1, 6);
         printf("●떨어지는 눈덩이를 피해 살아남으세요!●");
-        gotoxy(ws + 11, 7);
-        printf("▷");
+        gotoxy(ws + 9, 7);
+        printf("← ▷ →");
         gotoxy(ws + 3, 8);
         printf("《시작하려면 아무키를 누르세요》");
 
@@ -266,12 +276,12 @@ int revel() {
     startMenu(); //안내말 호출
     //레벨 선택 글자 출력
     int ws = 18;
-    gotoxy(ws, 10);
-    printf("│\t * 레벨선택 *\t│\n");
+    gotoxy(ws+1, 10);
+    printf("○  * 레벨선택 * \t○");
     // gotoxy(ws, 11);
      //printf("------------------------\n");
     gotoxy(ws, 12);
-    printf("  ¹    ²    ³    ⁴ \n");
+    printf("   ¹    ²    ³   ⁴ ");
     //gotoxy(ws, 13);
     //printf("------------------------");
 
@@ -350,5 +360,6 @@ void main(void)
     } while (t);
 
     system("cls");
-    printf("\n\n-----종료되었습니다.----\n\n");
+    gotoxy(18, 3);
+    printf("-----종료되었습니다.----\n\n");
 }
